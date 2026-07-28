@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cyberpunk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossy Sales Dashboard - Multi Theme</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ================= THEME PALETTES ================= */
+
+        /* Theme 1: Neon Cyberpunk (Dark Glass) */
+        [data-theme="cyberpunk"] {
+            --bg-color: #0b0f19;
+            --bg-radial: radial-gradient(circle at 15% 15%, rgba(79, 172, 254, 0.15) 0%, transparent 40%),
+                         radial-gradient(circle at 85% 85%, rgba(225, 0, 255, 0.12) 0%, transparent 40%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-gloss: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.02) 100%);
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --accent-purple: #7f00ff;
+            --accent-pink: #e100ff;
+            --accent-green: #00e676;
+            --accent-amber: #ffab00;
+            --text-main: #f0f4f8;
+            --text-sub: #94a3b8;
+            --select-bg: rgba(15, 23, 42, 0.85);
+            --card-hover-shadow: rgba(0, 242, 254, 0.2);
+            --table-hover: rgba(255, 255, 255, 0.04);
+            --chart-colors: ["#00f2fe", "#4facfe", "#7f00ff", "#e100ff", "#00e676"];
+        }
+
+        /* Theme 2: Golden Emerald Luxury (Deep Warm Emerald / Gold Glass) */
+        [data-theme="emerald"] {
+            --bg-color: #051811;
+            --bg-radial: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.2) 0%, transparent 45%),
+                         radial-gradient(circle at 80% 80%, rgba(245, 158, 11, 0.15) 0%, transparent 45%);
+            --glass-bg: rgba(20, 45, 35, 0.45);
+            --glass-border: rgba(52, 211, 153, 0.25);
+            --glass-gloss: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.02) 100%);
+            --accent-cyan: #34d399;
+            --accent-blue: #10b981;
+            --accent-purple: #f59e0b;
+            --accent-pink: #fbbf24;
+            --accent-green: #34d399;
+            --accent-amber: #fbbf24;
+            --text-main: #f0fdf4;
+            --text-sub: #a7f3d0;
+            --select-bg: rgba(6, 44, 30, 0.9);
+            --card-hover-shadow: rgba(52, 211, 153, 0.3);
+            --table-hover: rgba(52, 211, 153, 0.08);
+            --chart-colors: ["#34d399", "#10b981", "#f59e0b", "#fbbf24", "#6ee7b7"];
+        }
+
+        /* Theme 3: Deep Sunset Gold & Violet (Warm Amber / Dark Velvet Glass) */
+        [data-theme="sunset"] {
+            --bg-color: #1a0b1e;
+            --bg-radial: radial-gradient(circle at 10% 20%, rgba(244, 63, 94, 0.2) 0%, transparent 40%),
+                         radial-gradient(circle at 90% 80%, rgba(251, 146, 60, 0.2) 0%, transparent 40%);
+            --glass-bg: rgba(45, 20, 50, 0.45);
+            --glass-border: rgba(244, 114, 182, 0.22);
+            --glass-gloss: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.02) 100%);
+            --accent-cyan: #fb923c;
+            --accent-blue: #f43f5e;
+            --accent-purple: #c084fc;
+            --accent-pink: #e879f9;
+            --accent-green: #4ade80;
+            --accent-amber: #fbbf24;
+            --text-main: #fff1f2;
+            --text-sub: #fbcfe8;
+            --select-bg: rgba(35, 12, 40, 0.9);
+            --card-hover-shadow: rgba(244, 63, 94, 0.3);
+            --table-hover: rgba(244, 114, 182, 0.08);
+            --chart-colors: ["#fb923c", "#f43f5e", "#c084fc", "#e879f9", "#fbbf24"];
+        }
+
+        /* Theme 4: Frost Crystal Light Gloss (Clean Crisp Glossy Light) */
+        [data-theme="frost"] {
+            --bg-color: #eef2f6;
+            --bg-radial: radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                         radial-gradient(circle at 90% 90%, rgba(147, 51, 234, 0.12) 0%, transparent 50%);
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --glass-gloss: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.2) 100%);
+            --accent-cyan: #2563eb;
+            --accent-blue: #3b82f6;
+            --accent-purple: #7c3aed;
+            --accent-pink: #d946ef;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --select-bg: rgba(255, 255, 255, 0.95);
+            --card-hover-shadow: rgba(37, 99, 235, 0.2);
+            --table-hover: rgba(59, 130, 246, 0.06);
+            --chart-colors: ["#2563eb", "#3b82f6", "#7c3aed", "#d946ef", "#10b981"];
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            transition: background-color 0.4s ease, border-color 0.4s ease, color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: var(--bg-radial);
+            color: var(--text-main);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Glossy Card Base Styling */
+        .glossy-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glossy-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: var(--glass-gloss);
+            pointer-events: none;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .glossy-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 35px var(--card-hover-shadow);
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            color: var(--text-sub);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Theme Selector Bar */
+        .theme-switcher-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 6px;
+            border-radius: 14px;
+            backdrop-filter: blur(12px);
+        }
+
+        .theme-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .theme-btn.active {
+            background: var(--glass-gloss);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Dropdowns Bar */
+        .control-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-sub);
+        }
+
+        .glossy-select {
+            background: var(--select-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .glossy-select:hover, .glossy-select:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 16px var(--card-hover-shadow);
+        }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.9px;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .kpi-subtext {
+            font-size: 12px;
+            color: var(--accent-green);
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        /* Charts Layout */
+        .charts-grid-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .charts-grid-secondary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
+        }
+
+        /* Tables */
+        .table-section {
+            margin-top: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        th {
+            padding: 14px;
+            color: var(--text-sub);
+            border-bottom: 1px solid var(--glass-border);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.8px;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--text-main);
+        }
+
+        tr:hover td {
+            background-color: var(--table-hover);
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--accent-cyan);
+        }
+
+        @media (max-width: 900px) {
+            .charts-grid-main, .charts-grid-secondary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header class="glossy-card">
+        <div>
+            <h1>Executive Sales Intelligence</h1>
+            <p>Interactive Glossy Analytics & Multi-Theme Look-and-Feel Switcher</p>
+        </div>
+
+        <!-- Theme Selection Control -->
+        <div class="theme-switcher-bar">
+            <button class="theme-btn active" onclick="setTheme('cyberpunk', this)">🌌 Cyber Dark</button>
+            <button class="theme-btn" onclick="setTheme('emerald', this)">🌲 Emerald Gold</button>
+            <button class="theme-btn" onclick="setTheme('sunset', this)">🌅 Velvet Sunset</button>
+            <button class="theme-btn" onclick="setTheme('frost', this)">❄️ Frost Crystal</button>
+        </div>
+    </header>
+
+    <!-- Dropdown Control Bar -->
+    <div class="glossy-card control-bar">
+        <!-- Year Comparison Filter -->
+        <div class="control-group">
+            <label for="yearSelect">📅 Year Filter / Comparison</label>
+            <select id="yearSelect" class="glossy-select" onchange="updateDashboard()">
+                <option value="all" selected>All Years (2024 - 2025 Overview)</option>
+                <option value="2024">Year 2024 Only</option>
+                <option value="2025">Year 2025 Only</option>
+            </select>
+        </div>
+
+        <!-- Dimension View Dropdown -->
+        <div class="control-group">
+            <label for="dimensionSelect">📊 Primary Analysis Dimension</label>
+            <select id="dimensionSelect" class="glossy-select" onchange="updateDashboard()">
+                <option value="category" selected>🛍️ Product Category Breakdown</option>
+                <option value="region">🌍 Regional Breakdown</option>
+                <option value="channel">🏪 Sales Channel Breakdown</option>
+                <option value="year">📅 Year-over-Year Comparison</option>
+            </select>
+        </div>
+
+        <!-- Category Focus Filter -->
+        <div class="control-group">
+            <label for="categorySelect">🎯 Specific Category Focus</label>
+            <select id="categorySelect" class="glossy-select" onchange="updateDashboard()">
+                <option value="all" selected>All Categories Combined</option>
+                <option value="Electronics">Electronics ($121.9k)</option>
+                <option value="Sports & Outdoors">Sports & Outdoors ($84.1k)</option>
+                <option value="Home & Living">Home & Living ($66.2k)</option>
+                <option value="Apparel">Apparel ($58.3k)</option>
+                <option value="Beauty">Beauty ($34.9k)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="kpi-grid">
+        <div class="glossy-card">
+            <div class="kpi-title" id="kpi1-title">Total Revenue</div>
+            <div class="kpi-value" id="kpi1-val">$365,349</div>
+            <div class="kpi-subtext" id="kpi1-sub">+1.62% YoY Growth</div>
+        </div>
+        <div class="glossy-card">
+            <div class="kpi-title" id="kpi2-title">Total Profit</div>
+            <div class="kpi-value" id="kpi2-val">$164,158</div>
+            <div class="kpi-subtext" id="kpi2-sub">44.93% Profit Margin</div>
+        </div>
+        <div class="glossy-card">
+            <div class="kpi-title" id="kpi3-title">Total Volume</div>
+            <div class="kpi-value" id="kpi3-val">2,500</div>
+            <div class="kpi-subtext" id="kpi3-sub">24 Months Total</div>
+        </div>
+        <div class="glossy-card">
+            <div class="kpi-title" id="kpi4-title">Average Order Value</div>
+            <div class="kpi-value" id="kpi4-val">$146.14</div>
+            <div class="kpi-subtext" id="kpi4-sub">Top Category: $263.36</div>
+        </div>
+    </div>
+
+    <!-- Main Charts Section -->
+    <div class="charts-grid-main">
+        <div class="glossy-card">
+            <div class="chart-title">Monthly Revenue & Profit Trend</div>
+            <div class="chart-container">
+                <canvas id="monthlyTrendChart"></canvas>
+            </div>
+        </div>
+        <div class="glossy-card">
+            <div class="chart-title">Revenue Share Distribution</div>
+            <div class="chart-container">
+                <canvas id="categoryDonutChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Charts Section -->
+    <div class="charts-grid-secondary">
+        <div class="glossy-card">
+            <div class="chart-title" id="dynamicChartTitle">Revenue vs Profit Breakdown</div>
+            <div class="chart-container">
+                <canvas id="dynamicBarChart"></canvas>
+            </div>
+        </div>
+        <div class="glossy-card">
+            <div class="chart-title">Average Order Value (AOV) Ranking</div>
+            <div class="chart-container">
+                <canvas id="aovChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table Section -->
+    <div class="glossy-card table-section">
+        <div class="chart-title">
+            <span id="tableTitle">Detailed Performance Summary Table</span>
+            <span class="badge" id="tableBadge">Filtered View</span>
+        </div>
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>Segment</th>
+                    <th>Revenue ($)</th>
+                    <th>Profit ($)</th>
+                    <th>Orders</th>
+                    <th>Margin (%)</th>
+                    <th>AOV ($)</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- JS populated -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Theme Palette Definitions for Chart.js
+    const themePalettes = {
+        cyberpunk: { text: '#94a3b8', border: 'rgba(255,255,255,0.12)', c1: '#00f2fe', c2: '#4facfe', c3: '#7f00ff', c4: '#e100ff', c5: '#00e676' },
+        emerald: { text: '#a7f3d0', border: 'rgba(52,211,153,0.2)', c1: '#34d399', c2: '#10b981', c3: '#f59e0b', c4: '#fbbf24', c5: '#6ee7b7' },
+        sunset: { text: '#fbcfe8', border: 'rgba(244,114,182,0.2)', c1: '#fb923c', c2: '#f43f5e', c3: '#c084fc', c4: '#e879f9', c5: '#fbbf24' },
+        frost: { text: '#475569', border: 'rgba(0,0,0,0.1)', c1: '#2563eb', c2: '#3b82f6', c3: '#7c3aed', c4: '#d946ef', c5: '#10b981' }
+    };
+
+    let currentTheme = 'cyberpunk';
+
+    function setTheme(themeName, btn) {
+        currentTheme = themeName;
+        document.documentElement.setAttribute('data-theme', themeName);
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+
+        // Update Chart.js Text & Grid colors
+        const palette = themePalettes[themeName];
+        Chart.defaults.color = palette.text;
+        Chart.defaults.borderColor = palette.border;
+
+        updateDashboard();
+    }
+
+    // Datasets
+    const monthlyFull = {
+        '2024': {
+            labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+            revenue: [16299, 19283, 16350, 18200, 15137, 13222, 14794, 16812, 12535, 12367, 14582, 11630],
+            profit: [7572, 9007, 7231, 8242, 6873, 5907, 6488, 7580, 5579, 5419, 6655, 5385]
+        },
+        '2025': {
+            labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+            revenue: [16940, 15201, 15494, 12374, 14233, 11503, 17211, 16599, 15195, 17414, 19609, 12365],
+            profit: [7575, 6831, 6873, 5735, 6224, 5103, 7686, 7495, 6889, 7431, 8942, 5434]
+        }
+    };
+
+    const categoryData = [
+        { name: "Electronics", revenue: 121936.15, profit: 55647.64, orders: 463, margin: 45.64, aov: 263.36 },
+        { name: "Sports & Outdoors", revenue: 84059.76, profit: 37259.45, orders: 522, margin: 44.32, aov: 161.03 },
+        { name: "Home & Living", revenue: 66190.24, profit: 29640.53, orders: 511, margin: 44.78, aov: 129.53 },
+        { name: "Apparel", revenue: 58283.19, profit: 25944.26, orders: 499, margin: 44.51, aov: 116.80 },
+        { name: "Beauty", revenue: 34879.72, profit: 15666.14, orders: 505, margin: 44.91, aov: 69.07 }
+    ];
+
+    const regionData = [
+        { name: "East", revenue: 97690.20, profit: 43873.57, orders: 611, margin: 44.91, aov: 159.89 },
+        { name: "North", revenue: 74333.35, profit: 33376.72, orders: 535, margin: 44.90, aov: 138.94 },
+        { name: "South", revenue: 71523.12, profit: 32287.44, orders: 458, margin: 45.14, aov: 156.16 },
+        { name: "West", revenue: 65661.05, profit: 29624.79, orders: 502, margin: 45.12, aov: 130.80 },
+        { name: "Central", revenue: 56141.34, profit: 24995.50, orders: 394, margin: 44.52, aov: 142.49 }
+    ];
+
+    const channelData = [
+        { name: "Wholesale", revenue: 148724.00, profit: 73072.00, orders: 400, margin: 49.13, aov: 371.81 },
+        { name: "Online", revenue: 105349.00, profit: 43866.00, orders: 800, margin: 41.64, aov: 131.69 },
+        { name: "Marketplace", revenue: 74451.00, profit: 39103.00, orders: 500, margin: 52.52, aov: 148.90 },
+        { name: "Retail Store", revenue: 36825.06, profit: 8117.02, orders: 800, margin: 22.04, aov: 46.03 }
+    ];
+
+    const yearData = [
+        { name: "Year 2024", revenue: 181209.97, profit: 81938.75, orders: 1237, margin: 45.22, aov: 146.49 },
+        { name: "Year 2025", revenue: 184139.09, profit: 82219.27, orders: 1263, margin: 44.65, aov: 145.80 }
+    ];
+
+    let lineChart, donutChart, barChart, aovChart;
+
+    function updateDashboard() {
+        const yearVal = document.getElementById('yearSelect').value;
+        const dimVal = document.getElementById('dimensionSelect').value;
+        const catVal = document.getElementById('categorySelect').value;
+        const palette = themePalettes[currentTheme];
+
+        // 1. Calculate KPIs
+        let totalRev = 365349.06;
+        let totalProf = 164158.02;
+        let totalOrders = 2500;
+
+        if (catVal !== 'all') {
+            const catItem = categoryData.find(c => c.name === catVal);
+            totalRev = catItem.revenue;
+            totalProf = catItem.profit;
+            totalOrders = catItem.orders;
+        } else if (yearVal === '2024') {
+            totalRev = 181209.97;
+            totalProf = 81938.75;
+            totalOrders = 1237;
+        } else if (yearVal === '2025') {
+            totalRev = 184139.09;
+            totalProf = 82219.27;
+            totalOrders = 1263;
+        }
+
+        const marginPct = (totalProf / totalRev) * 100;
+        const aov = totalRev / totalOrders;
+
+        document.getElementById('kpi1-val').innerText = '$' + Math.round(totalRev).toLocaleString();
+        document.getElementById('kpi2-val').innerText = '$' + Math.round(totalProf).toLocaleString();
+        document.getElementById('kpi3-val').innerText = totalOrders.toLocaleString();
+        document.getElementById('kpi4-val').innerText = '$' + aov.toFixed(2);
+        document.getElementById('kpi2-sub').innerText = marginPct.toFixed(2) + '% Margin';
+
+        // 2. Monthly Trend Chart
+        renderLineChart(yearVal, palette);
+
+        // 3. Segment Data
+        let activeDataset = categoryData;
+        if (dimVal === 'region') activeDataset = regionData;
+        else if (dimVal === 'channel') activeDataset = channelData;
+        else if (dimVal === 'year') activeDataset = yearData;
+
+        if (catVal !== 'all' && dimVal === 'category') {
+            activeDataset = categoryData.filter(c => c.name === catVal);
+        }
+
+        renderDonutChart(activeDataset, palette);
+        renderBarChart(activeDataset, palette);
+        renderAovChart(activeDataset, palette);
+        renderTable(activeDataset);
+    }
+
+    function renderLineChart(yearVal, palette) {
+        const ctx = document.getElementById('monthlyTrendChart').getContext('2d');
+        if (lineChart) lineChart.destroy();
+
+        let labels = [];
+        let revData = [];
+        let profData = [];
+
+        if (yearVal === '2024') {
+            labels = monthlyFull['2024'].labels.map(l => '2024 ' + l);
+            revData = monthlyFull['2024'].revenue;
+            profData = monthlyFull['2024'].profit;
+        } else if (yearVal === '2025') {
+            labels = monthlyFull['2025'].labels.map(l => '2025 ' + l);
+            revData = monthlyFull['2025'].revenue;
+            profData = monthlyFull['2025'].profit;
+        } else {
+            labels = [...monthlyFull['2024'].labels.map(l => '24-' + l), ...monthlyFull['2025'].labels.map(l => '25-' + l)];
+            revData = [...monthlyFull['2024'].revenue, ...monthlyFull['2025'].revenue];
+            profData = [...monthlyFull['2024'].profit, ...monthlyFull['2025'].profit];
+        }
+
+        lineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Revenue ($)',
+                        data: revData,
+                        borderColor: palette.c1,
+                        backgroundColor: palette.c1 + '22',
+                        fill: true,
+                        tension: 0.35,
+                        borderWidth: 2.5
+                    },
+                    {
+                        label: 'Profit ($)',
+                        data: profData,
+                        borderColor: palette.c4,
+                        backgroundColor: palette.c4 + '11',
+                        fill: true,
+                        tension: 0.35,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+    }
+
+    function renderDonutChart(dataset, palette) {
+        const ctx = document.getElementById('categoryDonutChart').getContext('2d');
+        if (donutChart) donutChart.destroy();
+
+        donutChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: dataset.map(d => d.name),
+                datasets: [{
+                    data: dataset.map(d => d.revenue),
+                    backgroundColor: [palette.c1, palette.c2, palette.c3, palette.c4, palette.c5],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } },
+                cutout: '70%'
+            }
+        });
+    }
+
+    function renderBarChart(dataset, palette) {
+        const ctx = document.getElementById('dynamicBarChart').getContext('2d');
+        if (barChart) barChart.destroy();
+
+        barChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: dataset.map(d => d.name),
+                datasets: [
+                    { label: 'Revenue ($)', data: dataset.map(d => d.revenue), backgroundColor: palette.c2, borderRadius: 6 },
+                    { label: 'Profit ($)', data: dataset.map(d => d.profit), backgroundColor: palette.c3, borderRadius: 6 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+    }
+
+    function renderAovChart(dataset, palette) {
+        const ctx = document.getElementById('aovChart').getContext('2d');
+        if (aovChart) aovChart.destroy();
+
+        aovChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: dataset.map(d => d.name),
+                datasets: [{
+                    label: 'AOV ($)',
+                    data: dataset.map(d => d.aov),
+                    backgroundColor: [palette.c1, palette.c2, palette.c3, palette.c4, palette.c5],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    function renderTable(dataset) {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        dataset.forEach(item => {
+            const row = `<tr>
+                <td><strong>${item.name}</strong></td>
+                <td>$${item.revenue.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                <td>$${item.profit.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                <td>${item.orders.toLocaleString()}</td>
+                <td>${item.margin.toFixed(2)}%</td>
+                <td>$${item.aov.toFixed(2)}</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+        document.getElementById('tableBadge').innerText = `${dataset.length} Items Listed`;
+    }
+
+    // Initialize Dashboard Default Theme
+    setTheme('cyberpunk', document.querySelector('.theme-btn.active'));
+</script>
+</body>
+</html>
